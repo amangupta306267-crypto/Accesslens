@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AccessLens – Website accessibility, made clear</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Public+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#10263a; --muted:#54697c; --bg:#f4f8fb; --card:#fff; --line:#d9e4ec;
+  --blue:#1565c0; --blue-d:#0d4a91; --sky:#e3f0fb; --teal:#0f8b8d;
+  --high:#c62828; --high-bg:#fdeaea; --med:#b26a00; --med-bg:#fff2dc; --low:#1b6e3c; --low-bg:#e3f5e9;
+  --navy:#12324f;
+  --r-lg:20px; --r-md:12px; --r-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Public Sans',system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3{font-family:'Bricolage Grotesque',system-ui,sans-serif;line-height:1.1;letter-spacing:-.02em}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--blue);outline-offset:3px;border-radius:4px}
+.skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:#fff;padding:8px 14px;border-radius:var(--r-sm);z-index:99}
+.skip:focus{left:8px}
+.wrap{max-width:1120px;margin:0 auto;padding:0 24px}
+
+/* nav */
+header{position:sticky;top:0;z-index:20;background:rgba(244,248,251,.92);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font:800 1.2rem 'Bricolage Grotesque',sans-serif;text-decoration:none}
+.logo svg{width:30px;height:30px}
+nav ul{display:flex;gap:28px;list-style:none}
+nav ul a{text-decoration:none;color:var(--muted);font-weight:500;font-size:.95rem;padding:6px 2px}
+nav ul a:hover{color:var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:8px;background:var(--blue);color:#fff;border:0;border-radius:var(--r-sm);padding:12px 20px;font:600 .95rem 'Public Sans',sans-serif;cursor:pointer;text-decoration:none;transition:background .15s}
+.btn:hover{background:var(--blue-d)}
+.btn.light{background:#fff;color:var(--navy)}
+.btn.light:hover{background:var(--sky)}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding:72px 0 64px}
+.hero h1{font-size:clamp(2.6rem,5.4vw,4.2rem);font-weight:800;margin-bottom:20px}
+.hero h1 em{font-style:normal;color:var(--blue)}
+.lead{font-size:1.1rem;color:var(--muted);max-width:30em;margin-bottom:28px}
+.scan-form{display:flex;gap:10px;max-width:520px}
+.scan-form input{flex:1;min-width:0;padding:14px 16px;border:1.5px solid var(--line);border-radius:var(--r-sm);font:1rem 'Public Sans',sans-serif;background:#fff;color:var(--ink)}
+.scan-form input:focus{border-color:var(--blue);outline:3px solid var(--sky)}
+.assure{display:flex;gap:22px;margin-top:14px;font-size:.85rem;color:var(--muted);flex-wrap:wrap}
+.assure span::before{content:"✓";color:var(--teal);font-weight:700;margin-right:6px}
+.err{color:var(--high);font-size:.9rem;margin-top:10px;min-height:1.4em}
+
+/* hero mock: a page with issue markers */
+.mock{background:var(--card);border:1px solid var(--line);border-radius:var(--r-lg);box-shadow:0 24px 60px -24px rgba(18,50,79,.3);overflow:hidden}
+.mock-bar{display:flex;gap:6px;padding:12px 16px;border-bottom:1px solid var(--line);background:#f8fbfd}
+.mock-bar i{width:10px;height:10px;border-radius:50%;background:var(--line)}
+.mock-body{position:relative;padding:28px 26px 32px}
+.mock-body .t{height:16px;border-radius:4px;background:#dbe6ef;margin-bottom:12px}
+.mock-body .img{height:96px;border-radius:var(--r-md);background:linear-gradient(135deg,#cfe3f4,#e9f2fa);margin:18px 0}
+.mock-body .b{display:inline-block;height:34px;width:110px;border-radius:var(--r-sm);background:#b9c6d2}
+.pin{position:absolute;display:flex;align-items:center;gap:8px;background:var(--navy);color:#fff;font-size:.78rem;font-weight:600;padding:6px 11px 6px 7px;border-radius:99px;box-shadow:0 6px 16px rgba(18,50,79,.3)}
+.pin b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--high);font-size:.7rem}
+.pin.m b{background:#e08a00}
+.p1{top:44px;right:-6px;animation:drop .5s .4s both}
+.p2{top:132px;left:14px;animation:drop .5s .9s both}
+.p3{bottom:20px;right:20px;animation:drop .5s 1.4s both}
+@keyframes drop{from{opacity:0;transform:translateY(-10px) scale(.9)}to{opacity:1;transform:none}}
+.score-chip{position:absolute;left:-18px;bottom:-22px;background:var(--card);border:1px solid var(--line);border-radius:var(--r-md);padding:12px 18px;box-shadow:0 14px 30px -12px rgba(18,50,79,.3);display:flex;align-items:baseline;gap:8px}
+.score-chip strong{font:800 2rem 'Bricolage Grotesque',sans-serif;color:var(--blue)}
+.score-chip span{font-size:.8rem;color:var(--muted)}
+.mock-wrap{position:relative}
+
+/* sections */
+section{padding:72px 0}
+.sec-h{max-width:620px;margin-bottom:40px}
+.sec-h h2{font-size:clamp(1.9rem,3.6vw,2.7rem);margin-bottom:12px}
+.sec-h p{color:var(--muted)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:0;counter-reset:s;border-top:2px solid var(--ink)}
+.step{padding:26px 28px 8px 0;counter-increment:s}
+.step+.step{padding-left:28px;border-left:1px solid var(--line)}
+.step::before{content:counter(s);font:800 2.6rem 'Bricolage Grotesque',sans-serif;color:var(--blue);display:block;line-height:1;margin-bottom:14px}
+.step h3{font-size:1.25rem;margin-bottom:8px}
+.step p{color:var(--muted);font-size:.96rem}
+
+/* report */
+#report{background:var(--card);border-block:1px solid var(--line)}
+.rep-grid{display:grid;grid-template-columns:260px 1fr;gap:36px;align-items:start}
+.gauge{position:sticky;top:90px;background:var(--bg);border:1px solid var(--line);border-radius:var(--r-lg);padding:28px;text-align:center}
+.ring{--v:0;width:150px;height:150px;border-radius:50%;margin:0 auto 16px;display:grid;place-items:center;background:conic-gradient(var(--blue) calc(var(--v)*1%),var(--line) 0)}
+.ring div{width:114px;height:114px;border-radius:50%;background:var(--bg);display:grid;place-items:center;font:800 2.6rem 'Bricolage Grotesque',sans-serif}
+.counts{display:grid;gap:8px;margin-top:18px;text-align:left;font-size:.9rem}
+.counts div{display:flex;justify-content:space-between;padding:8px 12px;border-radius:var(--r-sm)}
+.c-h{background:var(--high-bg);color:var(--high)}.c-m{background:var(--med-bg);color:var(--med)}.c-l{background:var(--low-bg);color:var(--low)}
+.target{font-size:.82rem;color:var(--muted);margin-bottom:10px;word-break:break-all}
+.filters{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.filters button{border:1.5px solid var(--line);background:#fff;border-radius:99px;padding:6px 16px;font:500 .88rem 'Public Sans',sans-serif;cursor:pointer;color:var(--muted)}
+.filters button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.issue{border:1px solid var(--line);border-left-width:5px;border-radius:var(--r-md);padding:20px 22px;margin-bottom:14px;background:#fff}
+.issue.high{border-left-color:var(--high)}.issue.medium{border-left-color:#e08a00}.issue.low{border-left-color:var(--low)}
+.issue header{all:unset;display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.sev{font-size:.74rem;font-weight:700;padding:3px 10px;border-radius:99px;text-transform:capitalize}
+.sev.high{background:var(--high-bg);color:var(--high)}.sev.medium{background:var(--med-bg);color:var(--med)}.sev.low{background:var(--low-bg);color:var(--low)}
+.wcag{font-size:.8rem;color:var(--muted)}
+.issue h3{font-size:1.15rem;margin-bottom:6px}
+.issue p{color:var(--muted);font-size:.94rem;margin-bottom:12px}
+.issue details summary{cursor:pointer;font-weight:600;font-size:.9rem;color:var(--blue)}
+pre{margin-top:10px;background:#0f2133;color:#d7e6f4;border-radius:var(--r-sm);padding:14px 16px;overflow-x:auto;font:.82rem/1.6 ui-monospace,Menlo,Consolas,monospace}
+.empty{padding:32px;border:2px dashed var(--line);border-radius:var(--r-md);color:var(--muted);text-align:center}
+.loading{display:none;align-items:center;gap:12px;padding:18px;color:var(--muted)}
+.loading.on{display:flex}
+.spin{width:22px;height:22px;border:3px solid var(--line);border-top-color:var(--blue);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* pov */
+.pov{background:var(--navy);color:#fff;border-radius:var(--r-lg);padding:40px 44px;display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap}
+.pov h2{font-size:1.8rem;margin-bottom:8px}
+.pov p{color:#b9cde0;max-width:40em;font-size:.97rem}
+footer{padding:32px 0 48px;color:var(--muted);font-size:.88rem;text-align:center}
+
+@media(max-width:860px){
+  .hero{grid-template-columns:1fr;gap:48px;padding-top:44px}
+  nav ul{display:none}
+  .steps{grid-template-columns:1fr}
+  .step+.step{padding-left:0;border-left:0;border-top:1px solid var(--line)}
+  .rep-grid{grid-template-columns:1fr}
+  .gauge{position:static}
+  .scan-form{flex-direction:column}
+  .p1{right:8px}.score-chip{left:8px}
+  .pov{padding:30px 24px}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}html{scroll-behavior:auto}}
+.tools{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.tools button,.ai{border:1.5px solid var(--line);background:#fff;color:var(--ink);border-radius:var(--r-sm);padding:7px 14px;font:600 .85rem 'Public Sans',sans-serif;cursor:pointer}
+.tools button:hover,.ai:hover{border-color:var(--blue);color:var(--blue)}
+.proj{margin-top:14px;font-size:.85rem;color:var(--teal);font-weight:600}
+.shot{margin:0 0 20px;border:1px solid var(--line);border-radius:var(--r-md);overflow:hidden;max-height:520px;overflow-y:auto}
+.shot img{display:block;width:100%}
+.shot figcaption{padding:8px 14px;font-size:.8rem;color:var(--muted);background:var(--bg);position:sticky;bottom:0}
+.num{font-weight:800;font-size:.85rem}
+.who{font-size:.82rem}.who span{display:inline-block;background:var(--sky);color:var(--blue-d);border-radius:99px;padding:2px 10px;margin:0 6px 4px 0;font-weight:500}
+.ai{margin-top:12px}.ai[disabled]{opacity:.6;cursor:wait}
+.ai-out{white-space:pre-wrap;margin-top:10px;font-size:.9rem}.ai-out:empty{display:none}
+@media print{.skip,header,#top,#how,#about,footer,.tools,.filters,.ai{display:none!important}.rep-grid{grid-template-columns:1fr}.gauge{position:static}.shot{max-height:none}.issue{break-inside:avoid}}
+</style>
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+<header>
+  <nav class="wrap" aria-label="Main">
+    <a class="logo" href="#top"><svg viewBox="0 0 32 32" fill="none" aria-hidden="true"><rect width="32" height="32" rx="9" fill="#1565c0"/><path d="M5 16s4-7 11-7 11 7 11 7-4 7-11 7S5 16 5 16z" stroke="#fff" stroke-width="2"/><circle cx="16" cy="16" r="3.5" fill="#fff"/></svg>AccessLens</a>
+    <ul>
+      <li><a href="#how">How it works</a></li>
+      <li><a href="#report">Report</a></li>
+      <li><a href="#about">About</a></li>
+    </ul>
+    <a class="btn" href="#scan-input">Run a free scan</a>
+  </nav>
+</header>
+
+<main id="main">
+<div class="wrap" id="top">
+  <div class="hero">
+    <div>
+      <h1>Find what blocks people on your website, <em>then fix it.</em></h1>
+      <p class="lead">Paste a link. AccessLens checks the page against WCAG, shows who each problem affects, and gives you code you can copy to fix it.</p>
+      <form class="scan-form" id="scan-form" novalidate>
+        <label for="scan-input" style="position:absolute;left:-999px">Website URL</label>
+        <input id="scan-input" type="url" placeholder="https://your-website.com" autocomplete="url" required>
+        <button class="btn" type="submit">Scan my website</button>
+      </form>
+      <p class="err" id="err" role="alert"></p>
+      <div class="assure"><span>No account needed</span><span>Your data stays yours</span></div>
+    </div>
+
+    <div class="mock-wrap" aria-hidden="true">
+      <div class="mock">
+        <div class="mock-bar"><i></i><i></i><i></i></div>
+        <div class="mock-body">
+          <div class="t" style="width:60%"></div><div class="t" style="width:85%"></div>
+          <div class="img"></div>
+          <div class="t" style="width:70%"></div><span class="b"></span>
+          <div class="pin p1"><b>!</b>Low contrast text</div>
+          <div class="pin p2 m"><b>!</b>Image missing alt</div>
+          <div class="pin p3"><b>!</b>Button has no label</div>
+        </div>
+      </div>
+      <div class="score-chip"><strong>72</strong><span>accessibility score</span></div>
+    </div>
+  </div>
+</div>
+
+<section id="how" style="padding-top:24px">
+  <div class="wrap">
+    <div class="sec-h"><h2>From a URL to a fix list in three steps</h2><p>Accessibility reports are usually long and hard to act on. Ours is sorted by impact so you know where to start.</p></div>
+    <div class="steps">
+      <div class="step"><h3>Enter a URL</h3><p>Any public page. We load it and run axe-core checks for WCAG 2.1 rules.</p></div>
+      <div class="step"><h3>See what matters</h3><p>Each issue shows severity, the affected element and the WCAG criterion it breaks.</p></div>
+      <div class="step"><h3>Copy the fix</h3><p>Where a safe fix exists, you get example markup to paste into your code.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="report">
+  <div class="wrap">
+    <div class="sec-h"><h2>Your report</h2><p>Scan a page above and the results appear here. Until then, this is a sample.</p></div>
+    <div class="loading" id="loading" role="status"><div class="spin"></div>Scanning page and checking WCAG rules…</div>
+    <div class="rep-grid" id="rep">
+      <aside class="gauge" aria-label="Score summary">
+        <div class="ring" id="ring"><div id="score">0</div></div>
+        <strong>Accessibility score</strong>
+        <p class="target" id="target"></p>
+        <p class="proj" id="proj"></p>
+        <div class="counts">
+          <div class="c-h"><span>High</span><b id="n-high">0</b></div>
+          <div class="c-m"><span>Medium</span><b id="n-medium">0</b></div>
+          <div class="c-l"><span>Low</span><b id="n-low">0</b></div>
+        </div>
+      </aside>
+      <div>
+        <div class="tools" role="group" aria-label="Export report"><button type="button" id="x-pdf">Print / PDF</button><button type="button" id="x-csv">Download CSV</button><button type="button" id="x-json">Download JSON</button></div>
+        <div id="shotwrap"></div>
+        <div class="filters" role="group" aria-label="Filter by severity">
+          <button aria-pressed="true" data-f="all">All</button>
+          <button aria-pressed="false" data-f="high">High</button>
+          <button aria-pressed="false" data-f="medium">Medium</button>
+          <button aria-pressed="false" data-f="low">Low</button>
+        </div>
+        <div id="issues"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="pov">
+      <div>
+        <h2>Accessibility is a practice, not a checkbox.</h2>
+        <p>Automated checks catch only part of the problems. Use AccessLens as a starting point, then test with real people and keyboard-only navigation.</p>
+      </div>
+      <a class="btn light" href="#scan-input">Start with a page</a>
+    </div>
+  </div>
+</section>
+</main>
+<footer>© 2026 AccessLens · Built for a more inclusive web</footer>
+
+<script>
+// ====== CONFIG ======
+// Same server (npm start -> http://localhost:3000): "/api/scan" hi rehne do.
+// Frontend alag host par ho (Netlify): full URL daalo, e.g. "https://your-backend.onrender.com/api/scan"
+// Expected response: { url, score, issues:[{id,severity,title,description,wcag,element,fix}] }
+const API_URL = "/api/scan";
+
+const DEMO = {
+  url: "https://example.com", score: 72,
+  issues: [
+    {severity:"high", title:"Images are missing alt text", wcag:"WCAG 1.1.1 · Non-text content",
+     description:"Screen reader users cannot tell what these images show. 4 images affected.",
+     element:'<img src="hero.jpg">', fix:'<img src="hero.jpg" alt="Team reviewing a project plan">'},
+    {severity:"high", title:"Buttons have no accessible name", wcag:"WCAG 4.1.2 · Name, role, value",
+     description:"An icon-only button is announced as just “button”.",
+     element:'<button><svg>…</svg></button>', fix:'<button aria-label="Open menu"><svg aria-hidden="true">…</svg></button>'},
+    {severity:"medium", title:"Text contrast is too low", wcag:"WCAG 1.4.3 · Contrast (minimum)",
+     description:"Grey text on a white background has a 2.8:1 ratio. The minimum is 4.5:1.",
+     element:'<p style="color:#999">', fix:'<p style="color:#595959">'},
+    {severity:"medium", title:"Form fields have no label", wcag:"WCAG 3.3.2 · Labels or instructions",
+     description:"The email field relies on placeholder text, which disappears when typing.",
+     element:'<input placeholder="Email">', fix:'<label for="email">Email</label>\n<input id="email" placeholder="you@example.com">'},
+    {severity:"low", title:"Page has no main landmark", wcag:"Best practice · Landmarks",
+     description:"Keyboard and screen reader users cannot jump straight to the main content.",
+     element:'<div class="content">', fix:'<main class="content">'}
+  ]
+};
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let current = DEMO, filter = "all";
+
+function render(data){
+  current = data;
+  const n = {high:0, medium:0, low:0};
+  data.issues.forEach(i => n[i.severity]++);
+  $("#score").textContent = data.score;
+  $("#ring").style.setProperty("--v", data.score);
+  $("#target").textContent = data.url;
+  ["high","medium","low"].forEach(k => $("#n-"+k).textContent = n[k]);
+  $("#proj").textContent = data.afterHigh != null && n.high ? `Fix the ${n.high} high issue${n.high>1?"s":""}: score ${data.score} → ${data.afterHigh}` : "";
+  $("#shotwrap").innerHTML = /^data:image\/jpeg;base64,/.test(data.screenshot||"") ? `<figure class="shot"><img src="${data.screenshot}" alt="Screenshot of the scanned page with numbered boxes marking each issue"><figcaption>Numbers match the issue cards below.</figcaption></figure>` : "";
+  const list = data.issues.filter(i => filter==="all" || i.severity===filter);
+  $("#issues").innerHTML = list.length ? list.map(i => `
+    <article class="issue ${esc(i.severity)}">
+      <header>${i.num?`<span class="num">#${i.num}</span>`:""}<span class="sev ${esc(i.severity)}">${esc(i.severity)}</span><span class="wcag">${esc(i.wcag||"")}</span></header>
+      <h3>${esc(i.title)}</h3>
+      <p>${esc(i.description)}</p>${(i.who||[]).length?`<p class="who">Affects: ${i.who.map(w=>`<span>${esc(w)}</span>`).join("")}</p>`:""}
+      <details><summary>Show code and fix</summary>
+        <pre><code>${esc("Found:\n"+i.element+"\n\nFix:\n"+(i.fix||"Manual review needed"))}</code></pre>
+      </details>
+      <button type="button" class="ai" data-id="${current.issues.indexOf(i)}">✨ Get AI fix</button><div class="ai-out" role="status">${esc(ai[current.issues.indexOf(i)]||"")}</div>
+    </article>`).join("") : '<div class="empty">No issues at this severity. Nice.</div>';
+}
+
+document.querySelectorAll(".filters button").forEach(b => b.addEventListener("click", () => {
+  filter = b.dataset.f;
+  document.querySelectorAll(".filters button").forEach(x => x.setAttribute("aria-pressed", x===b));
+  render(current);
+}));
+
+$("#scan-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const err = $("#err"), url = $("#scan-input").value.trim();
+  err.textContent = "";
+  try { new URL(url); } catch { err.textContent = "Enter a full URL, like https://your-website.com"; return; }
+  $("#loading").classList.add("on"); $("#rep").style.opacity = .4;
+  $("#report").scrollIntoView({behavior:"smooth"});
+  try {
+    let data;
+    if (API_URL) {
+      const r = await fetch(API_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({url})});
+      data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || "Scan failed. Check the URL and try again.");
+    } else {
+      await new Promise(r => setTimeout(r, 1800)); // demo delay
+      data = {...DEMO, url};
+    }
+    Object.keys(ai).forEach(k => delete ai[k]);
+    filter = "all";
+    document.querySelectorAll(".filters button").forEach(x => x.setAttribute("aria-pressed", x.dataset.f==="all"));
+    render(data);
+  } catch (ex) {
+    err.textContent = ex.message;
+  } finally {
+    $("#loading").classList.remove("on"); $("#rep").style.opacity = 1;
+  }
+});
+
+const ai = {};
+const FIX_URL = API_URL.replace(/\/scan$/, "/fix");
+$("#issues").addEventListener("click", async e => {
+  const b = e.target.closest(".ai"); if (!b) return;
+  const id = +b.dataset.id, i = current.issues[id], out = b.nextElementSibling;
+  b.disabled = true; out.textContent = "Asking Gemini…";
+  try {
+    const r = await fetch(FIX_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({title:i.title, description:i.description, wcag:i.wcag, element:i.element})});
+    const d = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(d.error || "AI fix failed.");
+    out.textContent = ai[id] = d.text || "No suggestion returned.";
+  } catch (ex) { out.textContent = ex.message; }
+  b.disabled = false;
+});
+
+// ====== EXPORT ======
+const dl = (name, text, type) => { const a = document.createElement("a"); a.href = URL.createObjectURL(new Blob([text], {type})); a.download = name; a.click(); URL.revokeObjectURL(a.href); };
+$("#x-json").onclick = () => dl("accesslens-report.json", JSON.stringify({...current, screenshot: undefined}, null, 2), "application/json");
+$("#x-csv").onclick = () => {
+  const q = s => { s = String(s ?? ""); if (/^[=+\-@]/.test(s)) s = "'" + s; return '"' + s.replace(/"/g, '""') + '"'; };
+  const rows = current.issues.map(i => [i.severity, i.title, i.wcag, i.description, i.element, i.fix].map(q).join(","));
+  dl("accesslens-report.csv", ["severity,title,wcag,description,element,fix", ...rows].join("\n"), "text/csv");
+};
+$("#x-pdf").onclick = () => window.print(); // choose "Save as PDF"
+addEventListener("beforeprint", () => document.querySelectorAll("details").forEach(d => d.open = true));
+
+render(DEMO);
+</script>
+</body>
+</html>
